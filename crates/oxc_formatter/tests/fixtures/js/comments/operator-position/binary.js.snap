@@ -1,0 +1,88 @@
+---
+source: crates/oxc_formatter/tests/fixtures/mod.rs
+---
+==================== Input ====================
+const logical_expression =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* trailing comment */ &&
+  /* leading comment */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb &&
+  // line comment
+  cccccccccccccccccccccccc;
+
+const bc =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* internal before */ ||
+  /* internal after */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb;
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa +
+  /**/
+  a.a().a();
+
+==================== Output ====================
+------------------
+{ printWidth: 80 }
+------------------
+const logical_expression =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* trailing comment */ &&
+  /* leading comment */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb &&
+  // line comment
+  cccccccccccccccccccccccc;
+
+const bc =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* internal before */ ||
+  /* internal after */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb;
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa +
+  /**/
+  a.a().a();
+
+-------------------
+{ printWidth: 100 }
+-------------------
+const logical_expression =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* trailing comment */ &&
+  /* leading comment */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb &&
+  // line comment
+  cccccccccccccccccccccccc;
+
+const bc =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* internal before */ ||
+  /* internal after */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb;
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa +
+  /**/
+  a.a().a();
+
+---------------------------------------------------------
+{ experimentalOperatorPosition: "start", printWidth: 80 }
+---------------------------------------------------------
+const logical_expression =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* trailing comment */
+  && /* leading comment */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  // line comment
+  && cccccccccccccccccccccccc;
+
+const bc =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* internal before */
+  || /* internal after */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb;
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  /**/
+  + a.a().a();
+
+----------------------------------------------------------
+{ experimentalOperatorPosition: "start", printWidth: 100 }
+----------------------------------------------------------
+const logical_expression =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* trailing comment */
+  && /* leading comment */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+  // line comment
+  && cccccccccccccccccccccccc;
+
+const bc =
+  aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa /* internal before */
+  || /* internal after */ bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb;
+
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+  /**/
+  + a.a().a();
+
+===================== End =====================

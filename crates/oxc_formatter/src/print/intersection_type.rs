@@ -25,6 +25,17 @@ fn format_intersection_types<'a>(
     let last_index = node.len().saturating_sub(1);
     let mut is_prev_object_like = false;
     let mut is_chain_indented = false;
+    let operator_at_start = f.options().experimental_operator_position.is_start();
+
+    macro_rules! write_or_indent {
+        ($f:expr, $item:expr) => {
+            if is_chain_indented {
+                write!($f, indent(&$item));
+            } else {
+                write!($f, $item);
+            }
+        };
+    }
 
     for (index, item) in node.iter().enumerate() {
         let is_object_like = is_object_like_type(item.as_ref());
@@ -37,25 +48,36 @@ fn format_intersection_types<'a>(
             if !(is_prev_object_like || is_object_like)
                 || f.comments().has_leading_own_line_comment(item.span().start)
             {
-                write!(f, soft_line_indent_or_space(item));
+                if operator_at_start {
+                    write!(
+                        f,
+                        soft_line_indent_or_space(&format_with(|f| {
+                            write!(f, ["&", space(), format_with(|f| write_or_indent!(f, item))]);
+                        }))
+                    );
+                } else {
+                    write!(f, soft_line_indent_or_space(item));
+                }
             } else {
-                write!(f, space());
+                if operator_at_start {
+                    write!(f, [space(), "&", space(), format_with(|f| write_or_indent!(f, item))]);
+                } else {
+                    write!(f, space());
+                }
 
                 if !is_prev_object_like || !is_object_like {
                     // indent if we move from object to non-object or vice versa, otherwise keep inline
                     is_chain_indented = index > 1;
                 }
 
-                if is_chain_indented {
-                    write!(f, [indent(&item)]);
-                } else {
-                    write!(f, item);
+                if !operator_at_start {
+                    write_or_indent!(f, item);
                 }
             }
         }
 
         // Add separator if not the last element
-        if index < last_index {
+        if index < last_index && !operator_at_start {
             write!(f, [space(), "&"]);
         }
 

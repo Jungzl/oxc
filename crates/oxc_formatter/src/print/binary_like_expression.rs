@@ -5,7 +5,7 @@ use oxc_syntax::precedence::{GetPrecedence, Precedence};
 use crate::{
     Format,
     ast_nodes::{AstNode, AstNodes},
-    formatter::Formatter,
+    formatter::{Formatter, trivia::FormatLeadingComments},
 };
 
 use crate::{format_args, formatter::prelude::*, write};
@@ -436,8 +436,28 @@ impl<'a> Format<'a> for BinaryLeftOrRightSide<'a, '_> {
 
                 let right = binary_like_expression.right();
 
+                let operator_position_start = f.options().experimental_operator_position.is_start();
+
                 let operator_and_right_expression = format_with(|f| {
-                    write!(f, [space(), binary_like_expression.operator()]);
+                    if operator_position_start {
+                        write!(
+                            f,
+                            [
+                                if_group_breaks(&soft_line_break_or_space()),
+                                if_group_fits_on_line(&space()),
+                            ]
+                        );
+
+                        if f.comments().has_leading_own_line_comment(right.span().start) {
+                            let comments =
+                                f.context().comments().comments_before(right.span().start);
+                            write!(f, [FormatLeadingComments::Comments(comments)]);
+                        }
+                    } else {
+                        write!(f, [space()]);
+                    }
+
+                    write!(f, [binary_like_expression.operator()]);
 
                     let should_inline = binary_like_expression.should_inline_logical_expression();
 
@@ -449,6 +469,8 @@ impl<'a> Format<'a> for BinaryLeftOrRightSide<'a, '_> {
                         {
                             return write!(f, soft_line_indent_or_space(right));
                         }
+                    } else if operator_position_start {
+                        write!(f, [space()]);
                     } else {
                         write!(f, [soft_line_break_or_space()]);
                     }

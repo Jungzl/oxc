@@ -55,7 +55,7 @@ pub struct FormatOptions {
     /// Whether to expand object and array literals to multiple lines. Defaults to "auto".
     pub expand: Expand,
 
-    /// Controls the position of operators in binary expressions. [**NOT SUPPORTED YET**]
+    /// Controls the position of operators in binary expressions.
     ///
     /// Accepted values are:
     /// - `"start"`: Places the operator at the beginning of the next line.

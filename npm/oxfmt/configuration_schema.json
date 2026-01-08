@@ -32,6 +32,13 @@
       ],
       "type": "string"
     },
+    "OperatorPositionConfig": {
+      "enum": [
+        "start",
+        "end"
+      ],
+      "type": "string"
+    },
     "QuotePropsConfig": {
       "enum": [
         "as-needed",
@@ -280,6 +287,18 @@
       ],
       "description": "Which end of line characters to apply. (Default: `\"lf\"`)",
       "markdownDescription": "Which end of line characters to apply. (Default: `\"lf\"`)"
+    },
+    "experimentalOperatorPosition": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/OperatorPositionConfig"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "Where to place operators when lines wrap. (Default: `\"end\"`)",
+      "markdownDescription": "Where to place operators when lines wrap. (Default: `\"end\"`)"
     },
     "experimentalSortImports": {
       "anyOf": [

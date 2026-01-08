@@ -85,8 +85,8 @@ export async function runMigratePrettier() {
       console.error(`  - "endOfLine: auto" is not supported, skipping...`);
       continue;
     }
-    // Oxfmt does not support these experimental options yet
-    if (key === "experimentalTernaries" || key === "experimentalOperatorPosition") {
+    // Oxfmt does not support "experimentalTernaries" yet
+    if (key === "experimentalTernaries") {
       console.error(`  - "${key}" is not supported in JS/TS files yet`);
       continue;
     }

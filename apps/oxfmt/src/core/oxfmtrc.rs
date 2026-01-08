@@ -5,8 +5,8 @@ use serde_json::Value;
 use oxc_formatter::{
     ArrowParentheses, AttributePosition, BracketSameLine, BracketSpacing,
     EmbeddedLanguageFormatting, Expand, FormatOptions, IndentStyle, IndentWidth, LineEnding,
-    LineWidth, QuoteProperties, QuoteStyle, Semicolons, SortImportsOptions, SortOrder,
-    TailwindcssOptions, TrailingCommas,
+    LineWidth, OperatorPosition, QuoteProperties, QuoteStyle, Semicolons, SortImportsOptions,
+    SortOrder, TailwindcssOptions, TrailingCommas,
 };
 
 /// Configuration options for the Oxfmt.
@@ -63,11 +63,12 @@ pub struct Oxfmtrc {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub single_attribute_per_line: Option<bool>,
 
-    // NOTE: These experimental options are not yet supported.
-    // Just be here to report error if they are used.
+    /// Where to place operators when lines wrap. (Default: `"end"`)
     #[serde(skip_serializing_if = "Option::is_none")]
-    #[schemars(skip)]
-    pub experimental_operator_position: Option<bool>,
+    pub experimental_operator_position: Option<OperatorPositionConfig>,
+
+    // NOTE: This experimental option is not yet supported.
+    // Just be here to report error if it is used.
     #[serde(skip_serializing_if = "Option::is_none")]
     #[schemars(skip)]
     pub experimental_ternaries: Option<bool>,
@@ -181,6 +182,13 @@ pub struct SortImportsConfig {
     /// Accepts both `string` and `string[]` as group elements.
     #[serde(skip_serializing_if = "Option::is_none", deserialize_with = "deserialize_groups")]
     pub groups: Option<Vec<Vec<String>>>,
+}
+
+#[derive(Debug, Clone, Copy, Deserialize, Serialize, JsonSchema)]
+#[serde(rename_all = "lowercase")]
+pub enum OperatorPositionConfig {
+    Start,
+    End,
 }
 
 /// Custom deserializer for groups field to support both `string` and `string[]` as group elements
@@ -376,11 +384,7 @@ impl Oxfmtrc {
     /// Returns error if any option value is invalid
     pub fn into_options(self) -> Result<(FormatOptions, OxfmtOptions), String> {
         // Not yet supported options:
-        // [Prettier] experimentalOperatorPosition: "start" | "end"
         // [Prettier] experimentalTernaries: boolean
-        if self.experimental_operator_position.is_some() {
-            return Err("Unsupported option: `experimentalOperatorPosition`".to_string());
-        }
         if self.experimental_ternaries.is_some() {
             return Err("Unsupported option: `experimentalTernaries`".to_string());
         }
@@ -492,6 +496,14 @@ impl Oxfmtrc {
             format_options.embedded_language_formatting = match embedded_language_formatting {
                 EmbeddedLanguageFormattingConfig::Auto => EmbeddedLanguageFormatting::Auto,
                 EmbeddedLanguageFormattingConfig::Off => EmbeddedLanguageFormatting::Off,
+            };
+        }
+
+        // [Prettier] experimentalOperatorPosition: "start" | "end"
+        if let Some(operator_position) = self.experimental_operator_position {
+            format_options.experimental_operator_position = match operator_position {
+                OperatorPositionConfig::Start => OperatorPosition::Start,
+                OperatorPositionConfig::End => OperatorPosition::End,
             };
         }
 

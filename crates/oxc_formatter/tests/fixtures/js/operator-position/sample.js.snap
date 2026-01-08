@@ -1,0 +1,36 @@
+---
+source: crates/oxc_formatter/tests/fixtures/mod.rs
+---
+==================== Input ====================
+var a = Math.random() * (yRange * (1 - minVerticalFraction)) + minVerticalFraction * yRange - offset;
+
+==================== Output ====================
+------------------
+{ printWidth: 80 }
+------------------
+var a =
+  Math.random() * (yRange * (1 - minVerticalFraction)) +
+  minVerticalFraction * yRange -
+  offset;
+
+-------------------
+{ printWidth: 100 }
+-------------------
+var a =
+  Math.random() * (yRange * (1 - minVerticalFraction)) + minVerticalFraction * yRange - offset;
+
+---------------------------------------------------------
+{ experimentalOperatorPosition: "start", printWidth: 80 }
+---------------------------------------------------------
+var a =
+  Math.random() * (yRange * (1 - minVerticalFraction))
+  + minVerticalFraction * yRange
+  - offset;
+
+----------------------------------------------------------
+{ experimentalOperatorPosition: "start", printWidth: 100 }
+----------------------------------------------------------
+var a =
+  Math.random() * (yRange * (1 - minVerticalFraction)) + minVerticalFraction * yRange - offset;
+
+===================== End =====================
